@@ -9,9 +9,9 @@
 
 volatile struct t_struct t;
 
-//inline void _delay_loops(U32 loops) __attribute__ ((always_inline, naked));
-#if defined( __ARM_ARCH_7M__ ) || defined( __ARM_ARCH_6M__ )
-	void delay_loops(U32 loops) {
+//inline void _delay_loops(u32 loops) __attribute__ ((always_inline, naked));
+#if defined( __ARM_ARCH_6M__ ) || defined( __ARM_ARCH_7M__ ) || defined( __ARM_ARCH_7EM__ )
+	void delay_loops(u32 loops) {
 		asm(".syntax unified");
 		asm volatile (
 			"1: SUBS %[loops], %[loops], #1 \n"
@@ -25,9 +25,9 @@ volatile struct t_struct t;
 void t_setup(void) {
 }
 
-U32 t_ms(void) {
+u32 t_ms(void) {
 	cli();
-	U32 ms = t.cnt.ms;
+	u32 ms = t.cnt.ms;
 	sei();
 	return ms;
 }

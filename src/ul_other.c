@@ -8,14 +8,14 @@
 #include "ul_other.h"
 
 void *memset2(void *dest, int val, size_t len) {
-	U8 *dest1 = dest;
-	while (len--) *dest1++ = (U8)val;
+	u8 *dest1 = dest;
+	while (len--) *dest1++ = (u8)val;
 	return dest;
 }
 
 void *memcpy2(void *dest, const void *src, size_t len) {
-	U8 *dest1 = dest;
-	U8 *src1 = (U8 *)src;
+	u8 *dest1 = dest;
+	u8 *src1 = (u8 *)src;
 	while (len--) *dest1++ = *src1++;
 	return dest;
 }

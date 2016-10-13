@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <limits.h>
 
 #ifndef offsetof
     #define offsetof(s,m) (size_t)&(((s *)0)->m)
@@ -35,6 +36,8 @@
 	#define wdr()   asm volatile("wdr")
 	#define nop()   asm volatile("nop")
 	#define sleep() asm volatile("sleep")
+#else
+	#define PROGMEM
 #endif
 
 #ifdef __i8051
@@ -49,35 +52,29 @@
 	#define wdr()  { IWDG_KR = 0xAA; }
 #endif
 
-#if defined( __ARM_ARCH_7M__ ) || defined( __ARM_ARCH_6M__ )
+#if defined( __ARM_ARCH_7M__ ) || defined( __ARM_ARCH_6M__ ) || defined( __ARM_ARCH_7EM__ )
 	#define cli() asm volatile ( "CPSID i \n" )
 	#define sei() asm volatile ( "CPSIE i \n" )
 #endif
 
 //short named types
-#define U8   uint8_t
-#define S8   int8_t
-#define U16  uint16_t
-#define S16  int16_t
-#define U32  uint32_t
-#define S32  int32_t
-#define U64  uint64_t
-#define S64  int64_t
-#define F32  float
-#define F64  double
-#define F128 __float128
-
-#define u8   U8
-#define s8   S8
-#define u16  U16
-#define s16  S16
-#define u32  U32
-#define s32  S32
-#define u64  U64
-#define s64  S64
-#define f32  F32
-#define f64  F64
-#define f128 F128
+typedef uint8_t  u8;
+typedef int8_t   s8;
+typedef int8_t   i8;
+typedef uint16_t u16;
+typedef int16_t  s16;
+typedef int16_t  i16;
+typedef uint32_t u32;
+typedef int32_t  s32;
+typedef int32_t  i32;
+typedef uint64_t u64;
+typedef int64_t  s64;
+typedef int64_t  i64;
+typedef float    f32;
+typedef double   f64;
+#ifdef __float128
+	typedef __float128 f128;
+#endif
 
 //bit mask
 #define B(_b)   (1 << (_b))
@@ -99,18 +96,22 @@
 #define MIN(x, y)   ((x) < (y) ? (x) : (y))
 #define MAX(x, y)   ((x) > (y) ? (x) : (y))
 
-#ifdef __ARM_ARCH_7M__
+// cyclic shifts
+inline u8 rotl8(u8 value, u8 shift){ return (value << shift) | (value >> (sizeof(value) * CHAR_BIT - shift)); }
+inline u8 rotr8(u8 value, u8 shift){ return (value >> shift) | (value << (sizeof(value) * CHAR_BIT - shift)); }
+
+#if defined( __ARM_ARCH_7M__ ) || defined( __ARM_ARCH_7EM__ )
 	//ARM Cortex BitBand access macros
 	#define BITBAND_SRAM_REF   0x20000000
 	#define BITBAND_SRAM_BASE  0x22000000
 	// Convert SRAM address
-	#define BITBAND_SRAM(addr, bit) ((volatile U8 *)((BITBAND_SRAM_BASE + ((U32)(addr)-BITBAND_SRAM_REF)*32 + (bit*4))))
+	#define BITBAND_SRAM(addr, bit) ((volatile u8 *)((BITBAND_SRAM_BASE + ((u32)(addr)-BITBAND_SRAM_REF)*32 + (bit*4))))
 	#define BBM( addr, bit ) (BITBAND_SRAM(addr,bit))
 
 	#define BITBAND_PERI_REF   0x40000000
 	#define BITBAND_PERI_BASE  0x42000000
 	// Convert PERIPHERAL address
-	#define BITBAND_PERI(addr, bit) ((volatile U8 *)((BITBAND_PERI_BASE + ((U32)(addr)-BITBAND_PERI_REF)*32 + (bit*4))))
+	#define BITBAND_PERI(addr, bit) ((volatile u8 *)((BITBAND_PERI_BASE + ((u32)(addr)-BITBAND_PERI_REF)*32 + (bit*4))))
 	#define BBP( addr, bit ) (BITBAND_PERI(addr,bit))
 #endif
 

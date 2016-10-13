@@ -10,9 +10,9 @@
 #include "ul_timing.h"
 
 struct ptx ptx_thread[PTX_THREADS];
-U8 ptx_num;
+u8 ptx_num;
 
-struct ptx *ptx_add( char (*pf)(struct pt *pt, struct ptx *ptx), void *data, U8 flags ) {
+struct ptx *ptx_add( char (*pf)(struct pt *pt, struct ptx *ptx), void *data, u8 flags ) {
 	if (ptx_num < (PTX_THREADS)) {
 		struct ptx *ptx = &ptx_thread[ptx_num];
 		ptx->num   = ptx_num;
@@ -28,8 +28,9 @@ struct ptx *ptx_add( char (*pf)(struct pt *pt, struct ptx *ptx), void *data, U8 
 }
 
 
-void ptx_stop(struct ptx *ptx) {
+void ptx_stop(struct ptx *ptx){
 	ptx->flags &= ~PTX_RUN;
+	PT_INIT(&ptx->pt);
 }
 
 void ptx_start(struct ptx *ptx) {
